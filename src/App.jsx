@@ -2,38 +2,32 @@ import { useState } from "react"
 import "./App.css"
 
 function App() {
-  // todo 배열
   const [todoList, setTodoList] = useState([
-    { id: 0, content: "밥 먹기" },
-    { id: 1, content: "코딩공부하기" },
+    { id: 0, content: "123", completed: false },
+    { id: 1, content: "코딩 공부하기", completed: false },
+    { id: 2, content: "잠 자기", completed: false },
   ])
 
   return (
-    <>
+    <div className="todo-main">
       <TodoList todoList={todoList} setTodoList={setTodoList} />
+      <hr />
       <TodoInput todoList={todoList} setTodoList={setTodoList} />
-    </>
+    </div>
   )
 }
 
-// todoList 추가하는 input 함수
 function TodoInput({ todoList, setTodoList }) {
-  // input 값에 대한 추가 todo
   const [inputValue, setInputValue] = useState("")
 
   return (
     <>
-      <input value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
+      <input className="input-add" value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
       <button
         onClick={() => {
-          {
-            /* id는 고유한 값인 시간을 넣었음 */
-          }
           const newTodo = { id: Number(new Date()), content: inputValue }
-          {
-            /* 참조 자료형은 늘 복사하고 */
-          }
-          setTodoList([...todoList, newTodo])
+          const newTodoList = [...todoList, newTodo]
+          setTodoList(newTodoList)
           setInputValue("")
         }}
       >
@@ -43,49 +37,86 @@ function TodoInput({ todoList, setTodoList }) {
   )
 }
 
-// todoList li태그 생성하는 함수
-function TodoList({ todoList, setTodoList }) {
+function TodoHeader() {
   return (
-    <ul>
-      {todoList.map((todo) => (
-        <Todo key={todo.id} todo={todo} setTodoList={setTodoList} />
-      ))}
-    </ul>
+    <>
+      <h1 className="todo-header">GAMMJ의 Todo 리스트!</h1>
+    </>
   )
 }
 
-// todoList li태그 내용채우는 함수
-// todoLIst li태그 삭제버튼
+function TodoList({ todoList, setTodoList }) {
+  return (
+    <>
+      <TodoHeader />
+      <ul>
+        {todoList.map((todo) => (
+          <Todo key={todo.id} todo={todo} setTodoList={setTodoList} />
+        ))}
+      </ul>
+    </>
+  )
+}
+
+// 완료 체크박스
+function CheckBox({ todo, setTodoList }) {
+  return (
+    <>
+      <input
+        type="checkbox"
+        onChange={() => {
+          setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, completed: !el.completed } : el)))
+        }}
+      ></input>
+    </>
+  )
+}
+
 function Todo({ todo, setTodoList }) {
   const [inputValue, setInputValue] = useState("")
+  const [isEdit, setIsEdit] = useState(false)
 
   return (
-    <li>
-      {/* toto 내용 */}
-      {todo.content}
+    <>
+      <li>
+        {/* 완료 체크박스 표시 */}
+        <CheckBox todo={todo} setTodoList={setTodoList} />
 
-      {/* 수정input과 버튼 */}
-      <input value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
-      <button
-        onClick={() => {
-          setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, content: inputValue } : el)))
-          setInputValue("")
-        }}
-      >
-        수정
-      </button>
+        {/* 완료 되었으면 del태그로 감싸주기 */}
+        {todo.completed ? <del>{todo.content}</del> : <span>{todo.content}</span>}
 
-      {/* 삭제버튼 */}
-      <button
-        onClick={() => {
-          setTodoList((prev) => {
-            return prev.filter((el) => el.id !== todo.id)
-          })
-        }}
-      >
-        삭제
-      </button>
-    </li>
+        {/* isEdit이 true일 때만 input창 보여주기 */}
+        {isEdit && (
+          <input className="input-edit" value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
+        )}
+
+        {/* 수정버튼 */}
+        <button
+          onClick={() => {
+            if (isEdit) {
+              setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, content: inputValue } : el)))
+              setIsEdit(false)
+              setInputValue("")
+            } else {
+              setIsEdit(true)
+            }
+          }}
+        >
+          수정
+        </button>
+
+        {/* 삭제버튼 */}
+        <button
+          onClick={() => {
+            setTodoList((prev) => {
+              return prev.filter((el) => el.id !== todo.id)
+            })
+          }}
+        >
+          삭제
+        </button>
+      </li>
+    </>
   )
 }
 
