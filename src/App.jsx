@@ -1,5 +1,6 @@
 import { useState } from "react"
 import "./App.css"
+import quotes from "./data/quotes"
 
 function App() {
   const [todoList, setTodoList] = useState([
@@ -13,6 +14,7 @@ function App() {
       <TodoList todoList={todoList} setTodoList={setTodoList} />
       <hr />
       <TodoInput todoList={todoList} setTodoList={setTodoList} />
+      <RandomQuote />
     </div>
   )
 }
@@ -117,6 +119,27 @@ function Todo({ todo, setTodoList }) {
         </button>
       </li>
     </>
+  )
+}
+
+function RandomQuote() {
+  const [quote, setQuote] = useState(quotes[0].text)
+  const [author, setAuthor] = useState(quotes[0].author)
+
+  const changeQuote = () => {
+    const random = Math.floor(Math.random() * quotes.length)
+    setQuote(quotes[random].text)
+    setAuthor(quotes[random].author)
+  }
+
+  return (
+    <div className="random-quote">
+      <blockquote>
+        <p className="quote-text">"{quote}"</p>
+        <footer className="quote-author">— {author}</footer>
+      </blockquote>
+      <button onClick={changeQuote}>명언 교체</button>
+    </div>
   )
 }
 
