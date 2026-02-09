@@ -3,17 +3,22 @@ import "./App.css"
 import quotes from "./data/quotes"
 
 function App() {
-  const [todoList, setTodoList] = useState([
-    { id: 0, content: "123", completed: false },
-    { id: 1, content: "코딩 공부하기", completed: false },
-    { id: 2, content: "잠 자기", completed: false },
-  ])
+  const [todoList, setTodoList] = useState([{ id: Number(new Date()), content: "123", completed: false }])
+
+  const inputRef = useRef(null)
+
+  const addTodo = () => {
+    const newTodo = { id: Number(new Date()), content: inputRef.current.value }
+    setTodoList((prev) => [...prev, newTodo])
+    inputRef.current.value = ""
+  }
 
   return (
     <div className="todo-main">
       <TodoList todoList={todoList} setTodoList={setTodoList} />
       <hr />
-      <TodoInput todoList={todoList} setTodoList={setTodoList} />
+      <input ref={inputRef} />
+      <button onClick={addTodo}></button>
       <RandomQuote />
       <StopWatch />
     </div>
