@@ -28,7 +28,6 @@ const TodoInput = ({ setTodoList }) => {
     const newTodo = {
       content: inputRef.current.value,
       completed: false,
-      time: 0,
     }
     fetch("http://localhost:3000/todo", {
       method: "POST",
@@ -88,13 +87,23 @@ const Todo = ({ todo, setTodoList }) => {
         {/* 수정버튼 */}
         <button
           onClick={() => {
-            if (isEdit) {
-              setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, content: inputValue } : el)))
-              setIsEdit(false)
-              setInputValue("")
-            } else {
-              setIsEdit(true)
-            }
+            fetch(`http://localhost:3000/todo/${todo.id}`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ content: inputValue }),
+            })
+              .then((res) => res.json())
+              .then(() => {
+                if (isEdit) {
+                  setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, content: inputValue } : el)))
+                  setIsEdit(false)
+                  setInputValue("")
+                } else {
+                  setIsEdit(true)
+                }
+              })
           }}
         >
           수정
