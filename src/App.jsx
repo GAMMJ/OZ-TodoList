@@ -1,57 +1,59 @@
 import { useEffect, useRef, useState } from "react"
 import "./App.css"
-import quotes from "./data/quotes"
 
-function App() {
+const App = () => {
   const [todoList, setTodoList] = useState([{ id: Number(new Date()), content: "123", completed: false }])
-
   return (
-    <div className="todo-main">
-      <TodoList todoList={todoList} setTodoList={setTodoList}></TodoList>
+    <>
+      <TodoHeader />
       <TodoInput setTodoList={setTodoList} />
-
-      <hr />
-      <Clock />
-      <Timer />
+      <TodoList todoList={todoList} setTodoList={setTodoList} />
       <RandomQuote />
+      <Clock />
       <StopWatch />
-    </div>
+      <Timer />
+    </>
   )
 }
 
 // Todo input 추가 기능
-function TodoInput({ setTodoList }) {
+const TodoInput = ({ setTodoList }) => {
   const inputRef = useRef(null)
-
   const addTodo = () => {
-    const newTodo = { id: Number(new Date()), content: inputRef.current.value }
-    setTodoList((prev) => [...prev, newTodo])
+    const newTodo = {
+      id: Number(new Date()),
+      content: inputRef.current.value,
+    }
+    fetch("http://localhost:3000/todo", {
+      method: "POST",
+      body: JSON.stringify(newTodo),
+    })
+      .then((res) => res.json())
+      .then((res) => setTodoList((prev) => [...prev, res]))
+
     inputRef.current.value = ""
   }
-
   return (
     <>
       <input ref={inputRef} />
-      <button onClick={addTodo}></button>
+      <button onClick={addTodo}>추가</button>
     </>
   )
 }
 
 // Todo Header 제목 태그
-function TodoHeader() {
+const TodoHeader = () => {
   return (
     <>
-      <h1 className="todo-header">GAMMJ의 Todo 리스트!</h1>
+      <h1>GAMMJ의 Todo 리스트!</h1>
     </>
   )
 }
 
 // Todo 리스트 ul 태그
-function TodoList({ todoList, setTodoList }) {
+const TodoList = ({ todoList, setTodoList }) => {
   return (
     <>
-      <TodoHeader />
-
       <ul>
         {todoList.map((todo) => (
           <Todo key={todo.id} todo={todo} setTodoList={setTodoList} />
@@ -62,24 +64,18 @@ function TodoList({ todoList, setTodoList }) {
 }
 
 // Todo ul 태그 속 li태그
-function Todo({ todo, setTodoList }) {
+const Todo = ({ todo, setTodoList }) => {
   const [inputValue, setInputValue] = useState("")
   const [isEdit, setIsEdit] = useState(false)
-
   return (
     <>
       <li>
         {/* 완료 체크박스 표시 */}
         <CheckBox todo={todo} setTodoList={setTodoList} />
-
         {/* 완료 되었으면 del태그로 감싸주기 */}
-        {todo.completed ? <del>{todo.content}</del> : <span>{todo.content}</span>}
-
+        {todo.completed ? <del>{todo.content}</del> : <>{todo.content}</>}
         {/* isEdit이 true일 때만 input창 보여주기 */}
-        {isEdit && (
-          <input className="input-edit" value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
-        )}
-
+        {isEdit && <input value={inputValue} onChange={(event) => setInputValue(event.target.value)} />}
         {/* 수정버튼 */}
         <button
           onClick={() => {
@@ -94,7 +90,6 @@ function Todo({ todo, setTodoList }) {
         >
           수정
         </button>
-
         {/* ❌ 삭제 버튼 */}
         <button
           onClick={() => {
@@ -109,37 +104,48 @@ function Todo({ todo, setTodoList }) {
 }
 
 // 완료 체크박스
-function CheckBox({ todo, setTodoList }) {
+const CheckBox = ({ todo, setTodoList }) => {
   return (
     <>
       <input
         type="checkbox"
+        checked={todo.completed}
         onChange={() => {
           setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, completed: !el.completed } : el)))
         }}
-      ></input>
+      />
     </>
   )
 }
 
-function RandomQuote() {
-  const [quote, setQuote] = useState(quotes[0].text)
-  const [author, setAuthor] = useState(quotes[0].author)
+const useFetch = (url) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [data, setData] = useState(null)
 
-  const changeQuote = () => {
-    const random = Math.floor(Math.random() * quotes.length)
-    setQuote(quotes[random].text)
-    setAuthor(quotes[random].author)
-  }
+  useEffect(() => {
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        setData(res)
+        setIsLoading(false)
+      })
+  }, [url])
+
+  return [isLoading, data]
+}
+
+const RandomQuote = () => {
+  const [isLoading, data] = useFetch("https://korean-advice-open-api.vercel.app/api/advice")
 
   return (
-    <div className="random-quote">
-      <blockquote>
-        <p className="quote-text">"{quote}"</p>
-        <footer className="quote-author">— {author}</footer>
-      </blockquote>
-      <button onClick={changeQuote}>명언 교체</button>
-    </div>
+    <>
+      {!isLoading && (
+        <>
+          <div>{data.message}</div>
+          <div>{data.author}</div>
+        </>
+      )}
+    </>
   )
 }
 
@@ -148,11 +154,10 @@ const formatTime = (ms) => {
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const seconds = totalSeconds % 60
-
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
 }
 
-function StopWatch() {
+const StopWatch = () => {
   // 경과시간 표현할 상태
   const [elapsedTime, setElapsedTime] = useState(0)
   // 스톱워치가 작동중인지의 상태
@@ -167,14 +172,12 @@ function StopWatch() {
       // 시작당시시간 = 현재시간 - 경과시간
       // 타이머 멈추면 멈춘시간만큼 현재시간 보다 -가 되어 다시 시작 눌렀을 때 그대로 다시 시작되는 것처럼 보임
       startTimeRef.current = Date.now() - elapsedTime
-
       intervalRef.current = setInterval(() => {
         setElapsedTime(Date.now() - startTimeRef.current)
       }, 1000)
     } else {
       clearInterval(intervalRef.current)
     }
-
     return () => {
       clearInterval(intervalRef.current)
     }
@@ -206,17 +209,16 @@ const Clock = () => {
     clockRef.current = setInterval(() => {
       setTime(new Date())
     }, 1000)
-
     return () => {
       clearInterval(clockRef.current)
     }
   }, [])
 
-  return <div className="clock">{time.toLocaleTimeString()}</div>
+  return <div>{time.toLocaleTimeString()}</div>
 }
 
-function Timer() {
-  // 님은시간 표현할 상태
+const Timer = () => {
+  // 남은시간 표현할 상태
   const [remainingTime, setRemainingTime] = useState(0)
   // 타이머가 작동중인지의 상태
   const [isRunning, setIsRunning] = useState(false)
@@ -234,7 +236,6 @@ function Timer() {
     } else if (!isRunning || remainingTime === 0) {
       clearInterval(intervalRef.current)
     }
-
     return () => clearInterval(intervalRef.current)
   }, [isRunning, remainingTime])
 
@@ -252,7 +253,7 @@ function Timer() {
     setSeconds(0)
   }
 
-  function formatTime(totalSeconds) {
+  const formatTime = (totalSeconds) => {
     const mins = Math.floor(totalSeconds / 60)
     const secs = totalSeconds % 60
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
@@ -272,16 +273,12 @@ function Timer() {
       {/* 초 */}
       <input
         type="number"
-        min={0}
-        max={59}
         value={seconds}
         onChange={(event) => {
           setSeconds(Number(event.target.value))
         }}
       />
-
       <button onClick={startTimer}>시작</button>
-
       <button onClick={() => setIsRunning(false)}>멈춤</button>
       <button onClick={resetTimer}>초기화!</button>
     </>
