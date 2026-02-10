@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import "./App.css"
 
 const App = () => {
-  const [todoList, setTodoList] = useState([{ id: Number(new Date()), content: "123", completed: false }])
+  const [, data] = useFetch("http://localhost:3000/todo")
+  const [todoList, setTodoList] = useState([])
+
+  useEffect(() => {
+    if (data) setTodoList(data)
+  }, [data])
   return (
     <>
       <TodoHeader />
@@ -21,11 +26,15 @@ const TodoInput = ({ setTodoList }) => {
   const inputRef = useRef(null)
   const addTodo = () => {
     const newTodo = {
-      id: Number(new Date()),
       content: inputRef.current.value,
+      completed: false,
+      time: 0,
     }
     fetch("http://localhost:3000/todo", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(newTodo),
     })
       .then((res) => res.json())
@@ -93,7 +102,17 @@ const Todo = ({ todo, setTodoList }) => {
         {/* ❌ 삭제 버튼 */}
         <button
           onClick={() => {
-            setTodoList((prev) => prev.filter((el) => el.id !== todo.id))
+            fetch(`http://localhost:3000/todo/${todo.id}`, {
+              method: "DELETE",
+            })
+              .then((res) => {
+                if (res.ok)
+                  // 응답 성공 확인
+                  setTodoList((prev) => prev.filter((el) => el.id !== todo.id))
+              })
+              .catch((error) => {
+                console.error("삭제 실패:", error)
+              })
           }}
         >
           삭제
@@ -111,7 +130,13 @@ const CheckBox = ({ todo, setTodoList }) => {
         type="checkbox"
         checked={todo.completed}
         onChange={() => {
-          setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, completed: !el.completed } : el)))
+          fetch(`http://localhost:3000/todo/${todo.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ completed: !todo.completed }),
+          }).then(() => {
+            setTodoList((prev) => prev.map((el) => (el.id === todo.id ? { ...el, completed: !el.completed } : el)))
+          })
         }}
       />
     </>
@@ -181,7 +206,7 @@ const StopWatch = () => {
     return () => {
       clearInterval(intervalRef.current)
     }
-  }, [isRunning])
+  }, [isRunning, elapsedTime])
 
   const toggleRunning = () => {
     setIsRunning((prev) => !prev)
