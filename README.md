@@ -23,10 +23,10 @@ React와 Vite를 사용한 **Todo List**입니다.
 src/
 ├── components/          # React 컴포넌트들
 │   ├── CheckBox.jsx     # 완료 상태 체크박스
-│   ├── Clock.jsx        # 시계 (개발 중)
+│   ├── Clock.jsx        # 시계
 │   ├── RandomQuote.jsx  # 랜덤 명언
 │   ├── StopWatch.jsx    # 스탑워치
-│   └── Timer.jsx        # 타이머 (개발 중)
+│   └── Timer.jsx        # 타이머
 ├── hook/
 │   └── useFetch.jsx     # API 데이터 페칭 커스텀 훅
 ├── util/
