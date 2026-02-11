@@ -6,10 +6,10 @@ const RandomQuote = () => {
   return (
     <>
       {!isLoading && (
-        <>
-          <div>{data.message}</div>
-          <div>{data.author}</div>
-        </>
+        <div className="quotes">
+          <div className="quote-message">"{data.message}"</div>
+          <div className="quote-author">{data.author}</div>
+        </div>
       )}
     </>
   )

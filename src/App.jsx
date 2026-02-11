@@ -21,11 +21,8 @@ const App = () => {
       <TodoInput setTodoList={setTodoList} />
       <TodoList todoList={todoList} setTodoList={setTodoList} />
 
-      <div className="widget-area">
-        {/* <Clock /> */}
-        <StopWatch />
-        {/* <Timer /> */}
-      </div>
+      {/* <Clock /> */}
+      <StopWatch />
     </div>
   )
 }
@@ -51,10 +48,10 @@ const TodoInput = ({ setTodoList }) => {
     inputRef.current.value = ""
   }
   return (
-    <>
+    <div className="todo-input">
       <input className="input-add" ref={inputRef} onKeyDown={(e) => e.key === "Enter" && addTodo()} />
       <button onClick={addTodo}>추가</button>
-    </>
+    </div>
   )
 }
 
