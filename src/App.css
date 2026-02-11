@@ -1,42 +1,111 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ========================================
+   투두 리스트 전용 스타일
+   ======================================== */
+.todo-main {
+  width: 800px;
+  height: auto;
+  background-color: #e9e9e9;
+  padding: 30px 60px;
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.todo-header h1 {
+  font-size: 50px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 50px;
 }
 
-.card {
-  padding: 2em;
+/* ========================================
+   Input 스타일
+   ======================================== */
+.todo-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
 }
 
-.read-the-docs {
-  color: #888;
+.input-edit,
+.input-add {
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  background-color: #d4d4d4;
+  padding: 10px;
+  color: #1e1e1e;
+}
+
+.input-add {
+  margin-right: 20px;
+}
+
+ul li input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  border: none;
+  accent-color: #77b6ff;
+}
+
+/* ========================================
+   리스트 내부 버튼 스타일
+   ======================================== */
+ul li button {
+  background-color: #d1d1d1;
+  color: #1e1e1e;
+  font-size: 14px;
+}
+
+/* ========================================
+   스톱워치
+   ======================================== */
+
+.stopwatch {
+}
+
+.btn-toggle {
+  margin-right: 15px;
+}
+.stopwatch-elapsedTime {
+  margin-bottom: 15px;
+  color: #1e1e1e;
+}
+
+/* ========================================
+   명언
+   ======================================== */
+
+.quotes {
+  color: #1e1e1e;
+  background-color: #fff;
+  padding: 30px 0;
+  border-radius: 30px;
+}
+
+.quote-message {
+  margin-bottom: 15px;
+}
+
+.quote-author {
+  font-weight: 700;
+
+  display: inline-block;
+  transform: skewX(-15deg);
+}
+
+.quote-author::before {
+  content: "";
+  display: inline-block;
+  width: 15px;
+  height: 3px;
+  background-color: #f39d9d;
+  vertical-align: middle;
+  margin-right: 6px;
 }

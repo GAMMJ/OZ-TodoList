@@ -37,11 +37,13 @@ const StopWatch = () => {
   }
 
   return (
-    <>
-      <div>{formatTime(elapsedTime)}</div>
-      <button onClick={toggleRunning}>{isRunning ? "일시정지" : "시작"}</button>
+    <div className="stopwatch">
+      <div className="stopwatch-elapsedTime">{formatTime(elapsedTime)}</div>
+      <button className="btn-toggle" onClick={toggleRunning}>
+        {isRunning ? "일시정지" : "시작"}
+      </button>
       <button onClick={resetStopWatch}>초기화!</button>
-    </>
+    </div>
   )
 }
 
